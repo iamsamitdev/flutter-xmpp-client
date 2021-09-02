@@ -1,0 +1,34 @@
+version: '3'
+
+volumes:
+  postgres_data:
+      driver: local
+
+services:
+  db:
+    container_name: xmpp_db
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: tigase
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: <YOUR_PASSWORD>
+    ports:
+      - 9591:5432
+
+  tigase:
+    container_name: tigase_app
+    image: tigase/tigase-xmpp-server:latest
+    environment:
+      PGHOST: xmpp_db
+      PGUSER: postgres
+      PGPASSWORD: <YOUR_PASSWORD>
+      ADMIN_PASSWORD: 1234
+    ports:
+      - 5222:5222
+      - 5280:5280
+      - 5290:5290
+      - 8091:8080
+    depends_on:
+      - db
